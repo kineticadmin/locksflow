@@ -39,9 +39,10 @@ const STATUS_LABELS: Record<string, string> = {
 type Tab = 'upcoming' | 'pending' | 'history'
 
 const NAV_ITEMS = [
-  { href: '/admin/bookings', label: 'RDV' },
+  { href: '/admin/bookings',     label: 'RDV' },
   { href: '/admin/availability', label: 'Dispos' },
-  { href: '/admin/media', label: 'Médias' },
+  { href: '/admin/services',     label: 'Services' },
+  { href: '/admin/media',        label: 'Médias' },
 ]
 
 export default function AdminBookings() {

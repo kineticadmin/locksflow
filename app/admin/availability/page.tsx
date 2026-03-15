@@ -15,9 +15,10 @@ interface DayConfig { day_of_week: number; active: boolean; slots: string[] }
 interface BlockedSlot { id: string; date: string; slot: string | null; reason: string | null }
 
 const NAV_ITEMS = [
-  { href: '/admin/bookings', label: 'RDV' },
+  { href: '/admin/bookings',     label: 'RDV' },
   { href: '/admin/availability', label: 'Dispos' },
-  { href: '/admin/media', label: 'Médias' },
+  { href: '/admin/services',     label: 'Services' },
+  { href: '/admin/media',        label: 'Médias' },
 ]
 
 export default function AdminAvailability() {
