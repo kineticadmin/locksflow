@@ -1,0 +1,102 @@
+'use client'
+import { useEffect, useRef } from 'react'
+
+const services = [
+  { id: 'retwist',    num: '01', name: 'Retwist',               desc: 'Le soin régulier pour garder tes locks propres, bien définies et en bonne santé. On retravaille chaque section avec soin.',                             price: '50€',      unit: '/ session' },
+  { id: 'depart',     num: '02', name: 'Départ de locks',        desc: 'Le début de quelque chose. On pose les bases de ton flow avec les bonnes techniques pour que tes locks partent sur une bonne trajectoire.',            price: 'Sur devis', unit: '' },
+  { id: 'detartrage', num: '03', name: 'Entretien & détartrage', desc: 'Nettoyage en profondeur pour des locks saines. On élimine les résidus et on redonne de la légèreté à l\'ensemble.',                                    price: 'Sur devis', unit: '' },
+  { id: 'reparation', num: '04', name: 'Réparation',             desc: 'Une lock abîmée, ça se répare. On diagnostique, on traite, et on remet ton flow dans le bon état.',                                                     price: 'Sur devis', unit: '' },
+]
+
+function selectService(id: string) {
+  window.dispatchEvent(new CustomEvent('select-service', { detail: { service: id } }))
+  document.getElementById('location')?.scrollIntoView({ behavior: 'smooth' })
+}
+
+export default function ServicesSection() {
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let raf: number
+    const onScroll = () => {
+      raf = requestAnimationFrame(() => {
+        if (!gridRef.current) return
+        const rect = gridRef.current.getBoundingClientRect()
+        const center = rect.top + rect.height / 2 - window.innerHeight / 2
+        gridRef.current.style.transform = `translateY(${center * -0.15}px)`
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
+  }, [])
+
+  return (
+    <section style={{ background: 'transparent', overflow: 'hidden' }} id="services">
+      <div className="container" style={{ paddingTop: 120, paddingBottom: 160 }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#F97316', fontWeight: 500, marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
+          Ce qu&apos;on fait
+        </div>
+        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(36px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: 80, color: '#F2EDE5' }}>
+          Des mains<br />qui{' '}
+          <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', color: '#F97316', fontWeight: 400 }}>savent.</em>
+        </h2>
+
+        <div
+          ref={gridRef}
+          data-no-reveal
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, willChange: 'transform', paddingTop: 60 }}
+        >
+          {services.map((s, i) => (
+            <ServiceCard key={s.num} {...s} offset={i % 2 === 1} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ServiceCard({ id, num, name, desc, price, unit, offset }: { id: string; num: string; name: string; desc: string; price: string; unit: string; offset: boolean }) {
+  const base = offset ? -60 : 0
+  return (
+    <div
+      onClick={() => selectService(id)}
+      style={{
+        background: '#0d0d0d',
+        border: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: 24,
+        padding: 48,
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        transition: 'background 0.3s, border-color 0.3s, transform 0.3s',
+        transform: `translateY(${base}px)`,
+      }}
+      onMouseEnter={e => {
+        const el = e.currentTarget as HTMLElement
+        el.style.background = '#141414'
+        el.style.borderColor = 'rgba(249,115,22,0.3)'
+        el.style.transform = `translateY(${base - 4}px)`
+      }}
+      onMouseLeave={e => {
+        const el = e.currentTarget as HTMLElement
+        el.style.background = '#0d0d0d'
+        el.style.borderColor = 'rgba(255,255,255,0.07)'
+        el.style.transform = `translateY(${base}px)`
+      }}
+    >
+      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#F97316', opacity: 0.5, marginBottom: 24 }}>{num}</div>
+      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 22, fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: '#F2EDE5' }}>{name}</div>
+      <p style={{ fontSize: 14, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 32, fontFamily: 'var(--font-unbounded)' }}>{desc}</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 28, fontWeight: 900, color: '#F97316' }}>
+          {price}{unit && <span style={{ fontSize: 14, fontWeight: 400, color: '#888', fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}
+        </div>
+        <div style={{ fontSize: 12, fontFamily: 'var(--font-unbounded)', color: 'rgba(242,237,229,0.3)', letterSpacing: 1 }}>
+          Reserver →
+        </div>
+      </div>
+    </div>
+  )
+}

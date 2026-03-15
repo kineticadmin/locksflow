@@ -1,26 +1,143 @@
 @import "tailwindcss";
 
+@theme {
+  --color-black: #080808;
+  --color-cream: #F2EDE5;
+  --color-orange: #F97316;
+  --color-gray: #121212;
+  --color-muted: #A0A0A0;
+
+  --font-unbounded: var(--font-unbounded);
+  --font-dm: var(--font-dm-sans);
+  --font-playfair: var(--font-playfair);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --black: #080808;
+  --white: #F2EDE5;
+  --orange: #F97316;
+  --gray: #121212;
+  --text-muted: #A0A0A0;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-unbounded), sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: url('https://grainy-gradients.vercel.app/noise.svg');
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cursor.big {
+  width: 60px !important;
+  height: 60px !important;
+  opacity: 0.3;
+  background: var(--white);
+  mix-blend-mode: difference;
+}
+
+/* DayPicker custom — override tout */
+.rdp-custom {
+  --rdp-accent-color: #F97316 !important;
+  --rdp-accent-background-color: rgba(249,115,22,0.15) !important;
+  --rdp-background-color: rgba(249,115,22,0.1) !important;
+  --rdp-range_start-color: #080808 !important;
+  --rdp-range_end-color: #080808 !important;
+  --rdp-range_middle-background-color: rgba(249,115,22,0.1) !important;
+  color: #F2EDE5;
+}
+.rdp-custom * { box-sizing: border-box; }
+.rdp-custom .rdp-months { gap: 32px; }
+.rdp-custom .rdp-caption_label { color: #F2EDE5; font-size: 14px; }
+.rdp-custom .rdp-head_cell { color: rgba(242,237,229,0.4); font-size: 12px; }
+.rdp-custom .rdp-day_button {
+  color: #F2EDE5;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+.rdp-custom .rdp-day_button:hover:not(:disabled) { background: rgba(249,115,22,0.18) !important; color: #F2EDE5; }
+.rdp-custom .rdp-day_button:focus { outline: none; box-shadow: none; }
+.rdp-custom .rdp-selected .rdp-day_button,
+.rdp-custom .rdp-day_button[aria-selected="true"] {
+  background: #F97316 !important;
+  color: #080808 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.rdp-custom .rdp-today:not(.rdp-selected) .rdp-day_button { border: 1px solid rgba(249,115,22,0.5) !important; }
+.rdp-custom .rdp-disabled .rdp-day_button,
+.rdp-custom .rdp-day_button:disabled { color: rgba(242,237,229,0.18) !important; background: transparent !important; cursor: not-allowed; }
+.rdp-custom .rdp-nav button { color: #F97316; background: transparent; border: none; }
+.rdp-custom .rdp-nav button:hover { background: rgba(249,115,22,0.1) !important; }
+.rdp-custom .rdp-nav button svg { stroke: #F97316; fill: #F97316; }
+.rdp-custom a, .rdp-custom button { outline: none; }
+.rdp-custom :focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Bouton — remplissage blanc depuis le bord d'entrée du curseur */
+.btn-fill {
+  position: relative;
+  overflow: hidden;
+}
+.btn-fill .fill-blob {
+  position: absolute;
+  border-radius: 50%;
+  background: #ffffff;
+  pointer-events: none;
+  z-index: 0;
+}
+.btn-fill > *:not(.fill-blob),
+.btn-fill > *:not(.fill-blob) * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes stepOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-24px); }
+}
+.step-in  { animation: stepIn  0.32s ease forwards; }
+.step-out { animation: stepOut 0.25s ease forwards; }
+
+/* Conteneur centré max 1920px */
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: clamp(24px, 4vw, 80px);
+  padding-right: clamp(24px, 4vw, 80px);
 }
