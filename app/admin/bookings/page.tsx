@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { format, isBefore, startOfDay, isToday } from 'date-fns'
@@ -48,6 +48,7 @@ export default function AdminBookings() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<Tab>('upcoming')
+  const [expandedClient, setExpandedClient] = useState<string | null>(null)
   const supabase = createClient()
   const router = useRouter()
   const isMobile = useIsMobile()
@@ -80,6 +81,15 @@ export default function AdminBookings() {
   const pending  = bookings.filter(b => b.status === 'pending')
   const history  = bookings.filter(b => isBefore(new Date(b.date), today) || b.status === 'cancelled')
   const displayed = tab === 'upcoming' ? upcoming : tab === 'pending' ? pending : history
+
+  const visitCount: Record<string, number> = {}
+  bookings.forEach(b => { visitCount[b.phone] = (visitCount[b.phone] || 0) + 1 })
+
+  function clientHistory(booking: Booking) {
+    return bookings
+      .filter(b => b.phone === booking.phone && b.id !== booking.id)
+      .sort((a, b) => b.date.localeCompare(a.date))
+  }
 
   const stats = [
     { label: "Auj.", value: upcoming.filter(b => isToday(new Date(b.date))).length, color: '#F97316' },
@@ -167,10 +177,30 @@ export default function AdminBookings() {
                   <span style={{ color: '#A0A0A0' }}>{format(new Date(b.date), 'EEE dd MMM', { locale: fr })}</span>
                   {isToday(new Date(b.date)) && <span style={{ color: '#F97316', fontSize: 11 }}>Aujourd'hui</span>}
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, marginBottom: 12 }}>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13, marginBottom: visitCount[b.phone] > 1 ? 8 : 12 }}>
                   <a href={`tel:${b.phone}`} style={{ color: '#F2EDE5', textDecoration: 'none' }}>{b.phone}</a>
                   {b.email && <span style={{ color: '#555' }}>· {b.email}</span>}
                 </div>
+                {visitCount[b.phone] > 1 && (
+                  <button
+                    onClick={() => setExpandedClient(expandedClient === b.id ? null : b.id)}
+                    style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.25)', color: '#F97316', fontSize: 10, padding: '3px 8px', borderRadius: 20, cursor: 'pointer', fontFamily: 'var(--font-unbounded)', letterSpacing: 0.5, marginBottom: 10 }}
+                  >
+                    ×{visitCount[b.phone]} visites {expandedClient === b.id ? '▲' : '▼'}
+                  </button>
+                )}
+                {expandedClient === b.id && clientHistory(b).length > 0 && (
+                  <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10, marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {clientHistory(b).map(h => (
+                      <div key={h.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#888' }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[h.status], flexShrink: 0 }} />
+                        <span>{format(new Date(h.date), 'dd MMM yyyy', { locale: fr })}</span>
+                        <span style={{ color: '#555' }}>·</span>
+                        <span>{SERVICE_LABELS[h.service] || h.service}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: 8 }}>
                   {b.status !== 'confirmed' && b.status !== 'cancelled' && (
                     <button onClick={() => updateStatus(b.id, 'confirmed')} style={{ flex: 1, color: '#10B981', fontSize: 12, border: '1px solid rgba(16,185,129,0.25)', padding: '8px', background: 'rgba(16,185,129,0.08)', cursor: 'pointer', borderRadius: 6 }}>✓ Confirmer</button>
@@ -198,7 +228,8 @@ export default function AdminBookings() {
               </thead>
               <tbody>
                 {displayed.map(b => (
-                  <tr key={b.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: isToday(new Date(b.date)) ? 'rgba(249,115,22,0.04)' : 'transparent', transition: 'background 0.2s' }}
+                  <React.Fragment key={b.id}>
+                  <tr style={{ borderTop: '1px solid rgba(255,255,255,0.05)', background: isToday(new Date(b.date)) ? 'rgba(249,115,22,0.04)' : 'transparent', transition: 'background 0.2s' }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)'}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = isToday(new Date(b.date)) ? 'rgba(249,115,22,0.04)' : 'transparent'}
                   >
@@ -207,7 +238,19 @@ export default function AdminBookings() {
                       {isToday(new Date(b.date)) && <div style={{ fontSize: 10, color: '#F97316', marginTop: 2 }}>Aujourd'hui</div>}
                     </td>
                     <td style={{ padding: '14px 16px', color: '#F2EDE5', fontSize: 13, fontWeight: 600 }}>{b.time}</td>
-                    <td style={{ padding: '14px 16px', color: '#F2EDE5', fontWeight: 500 }}>{b.name}</td>
+                    <td style={{ padding: '14px 16px', color: '#F2EDE5', fontWeight: 500 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        {b.name}
+                        {visitCount[b.phone] > 1 && (
+                          <button
+                            onClick={() => setExpandedClient(expandedClient === b.id ? null : b.id)}
+                            style={{ background: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.25)', color: '#F97316', fontSize: 10, padding: '2px 8px', borderRadius: 20, cursor: 'pointer', fontFamily: 'var(--font-unbounded)', letterSpacing: 0.5, whiteSpace: 'nowrap' }}
+                          >
+                            ×{visitCount[b.phone]} {expandedClient === b.id ? '▲' : '▼'}
+                          </button>
+                        )}
+                      </div>
+                    </td>
                     <td style={{ padding: '14px 16px', color: '#A0A0A0', fontSize: 13 }}>{SERVICE_LABELS[b.service] || b.service}</td>
                     <td style={{ padding: '14px 16px', fontSize: 13 }}><a href={`tel:${b.phone}`} style={{ color: '#F2EDE5', textDecoration: 'none' }}>{b.phone}</a></td>
                     <td style={{ padding: '14px 16px', color: '#666', fontSize: 13 }}>{b.email || '—'}</td>
@@ -230,6 +273,21 @@ export default function AdminBookings() {
                       </div>
                     </td>
                   </tr>
+                  {expandedClient === b.id && clientHistory(b).length > 0 && (
+                    <tr>
+                      <td colSpan={8} style={{ padding: '0 16px 12px 48px', background: 'rgba(249,115,22,0.02)', borderTop: 'none' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px 24px' }}>
+                          {clientHistory(b).map(h => (
+                            <span key={h.id} style={{ fontSize: 12, color: '#666' }}>
+                              <span style={{ color: STATUS_COLORS[h.status] }}>●</span>{' '}
+                              {format(new Date(h.date), 'dd MMM yyyy', { locale: fr })} — {SERVICE_LABELS[h.service] || h.service}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
