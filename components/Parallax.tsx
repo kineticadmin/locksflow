@@ -36,7 +36,6 @@ export default function Parallax({ children, speed = 0.1, style, className, as: 
   }, [speed])
 
   return (
-    // @ts-expect-error dynamic tag
     <Tag ref={ref} style={{ willChange: 'transform', ...style }} className={className}>
       {children}
     </Tag>
