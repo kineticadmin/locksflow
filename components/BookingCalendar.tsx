@@ -6,13 +6,7 @@ import { format, isBefore, startOfDay, getDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useIsMobile } from '@/lib/useIsMobile'
 
-const SERVICES = [
-  { id: 'retwist',    label: 'Le Retwist',            price: '50€' },
-  { id: 'depart',     label: 'Le Depart',              price: 'Sur Devis' },
-  { id: 'detartrage', label: 'Entretien & Détartrage', price: 'Sur Devis' },
-  { id: 'reparation', label: 'Réparation',             price: 'Sur Devis' },
-]
-
+interface ServiceItem { id: string; name: string; price: string; unit: string }
 interface DayConfig { day_of_week: number; active: boolean; slots: string[] }
 
 const inputStyle: React.CSSProperties = {
@@ -50,9 +44,17 @@ export default function BookingCalendar() {
   const [returningClient, setReturningClient] = useState<string | null>(null)
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
+  const [services, setServices] = useState<ServiceItem[]>([])
   const [availConfig, setAvailConfig] = useState<DayConfig[]>([])
   const [availSlots, setAvailSlots] = useState<string[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setServices(data) })
+      .catch(() => {})
+  }, [])
 
   // Charge la config hebdo une fois au mount
   useEffect(() => {
@@ -161,15 +163,15 @@ export default function BookingCalendar() {
           <>
             <StepLabel n={1} label="Choisis ton service" />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-              {SERVICES.map(s => (
+              {services.map(s => (
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => { setService(s.id); goTo(2) }}
-                  style={{ padding: '16px 12px', border: `1px solid ${service === s.id ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: service === s.id ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
+                  onClick={() => { setService(s.name); goTo(2) }}
+                  style={{ padding: '16px 12px', border: `1px solid ${service === s.name ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: service === s.name ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
                 >
-                  <div style={{ fontFamily: 'var(--font-unbounded)', color: '#F2EDE5', marginBottom: 6, fontSize: 11 }}>{s.label}</div>
-                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 13 }}>{s.price}</div>
+                  <div style={{ fontFamily: 'var(--font-unbounded)', color: '#F2EDE5', marginBottom: 6, fontSize: 11 }}>{s.name}</div>
+                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 13 }}>{s.price}{s.unit && <span style={{ color: '#888', fontSize: 11, fontWeight: 400 }}> {s.unit}</span>}</div>
                 </button>
               ))}
             </div>

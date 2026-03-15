@@ -1,16 +1,11 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useIsMobile } from '@/lib/useIsMobile'
 
-const services = [
-  { id: 'retwist',    num: '01', name: 'Retwist',               desc: 'Le soin régulier pour garder tes locks propres, bien définies et en bonne santé. On retravaille chaque section avec soin.',                             price: '50€',      unit: '/ session' },
-  { id: 'depart',     num: '02', name: 'Départ de locks',        desc: 'Le début de quelque chose. On pose les bases de ton flow avec les bonnes techniques pour que tes locks partent sur une bonne trajectoire.',            price: 'Sur devis', unit: '' },
-  { id: 'detartrage', num: '03', name: 'Entretien & détartrage', desc: 'Nettoyage en profondeur pour des locks saines. On élimine les résidus et on redonne de la légèreté à l\'ensemble.',                                    price: 'Sur devis', unit: '' },
-  { id: 'reparation', num: '04', name: 'Réparation',             desc: 'Une lock abîmée, ça se répare. On diagnostique, on traite, et on remet ton flow dans le bon état.',                                                     price: 'Sur devis', unit: '' },
-]
+interface Service { id: string; name: string; desc: string; price: string; unit: string }
 
-function selectService(id: string) {
-  window.dispatchEvent(new CustomEvent('select-service', { detail: { service: id } }))
+function selectService(name: string) {
+  window.dispatchEvent(new CustomEvent('select-service', { detail: { service: name } }))
   document.getElementById('location')?.scrollIntoView({ behavior: 'smooth' })
 }
 
@@ -18,6 +13,14 @@ export default function ServicesSection() {
   const gridRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
+  const [services, setServices] = useState<Service[]>([])
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setServices(data) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (isMobile) return
@@ -59,7 +62,7 @@ export default function ServicesSection() {
           }}
         >
           {services.map((s, i) => (
-            <ServiceCard key={s.num} {...s} offset={!isMobile && !isTablet && i % 2 === 1} />
+            <ServiceCard key={s.id} {...s} num={String(i + 1).padStart(2, '0')} offset={!isMobile && !isTablet && i % 2 === 1} />
           ))}
         </div>
       </div>
@@ -67,11 +70,11 @@ export default function ServicesSection() {
   )
 }
 
-function ServiceCard({ id, num, name, desc, price, unit, offset }: { id: string; num: string; name: string; desc: string; price: string; unit: string; offset: boolean }) {
+function ServiceCard({ num, name, desc, price, unit, offset }: { num: string; name: string; desc: string; price: string; unit: string; offset: boolean }) {
   const base = offset ? -60 : 0
   return (
     <div
-      onClick={() => selectService(id)}
+      onClick={() => selectService(name)}
       style={{
         background: '#0d0d0d',
         border: '1px solid rgba(255,255,255,0.07)',
