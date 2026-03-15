@@ -10,11 +10,13 @@ const transporter = nodemailer.createTransport({
 
 const SERVICE_LABELS: Record<string, string> = {
   retwist: 'Retwist',
-  depart: 'Depart de Locks',
-  detartrage: 'Detartrage',
+  depart: 'Départ de Locks',
+  detartrage: 'Entretien & Détartrage',
+  reparation: 'Réparation',
 }
 
-export async function sendBookingConfirmation(params: {
+// Email envoyé immédiatement après la réservation — en attente de validation
+export async function sendBookingPending(params: {
   name: string
   email?: string
   service: string
@@ -26,14 +28,16 @@ export async function sendBookingConfirmation(params: {
   await transporter.sendMail({
     from: `Locks Flow <${process.env.GMAIL_USER}>`,
     to: params.email,
-    subject: 'Ton RDV Locks Flow est confirme',
+    subject: 'Demande de RDV reçue — Locks Flow',
     html: `
       <div style="font-family: sans-serif; background: #080808; color: #F2EDE5; padding: 40px; max-width: 500px; margin: 0 auto;">
         <div style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">locks<span style="color: #F97316;">.</span>flow</div>
-        <h2 style="font-size: 20px; margin-bottom: 20px;">Bonjour ${params.name},</h2>
-        <p style="opacity: 0.8; margin-bottom: 20px;">Ton RDV est confirme. On t'attend !</p>
-        <div style="background: #121212; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-          <div style="margin-bottom: 10px;"><strong>Service :</strong> ${SERVICE_LABELS[params.service]}</div>
+        <h2 style="font-size: 20px; margin-bottom: 16px;">Bonjour ${params.name},</h2>
+        <p style="opacity: 0.8; margin-bottom: 8px;">Ta demande de RDV a bien été reçue.</p>
+        <p style="opacity: 0.6; margin-bottom: 24px; font-size: 14px;">Elle est en attente de validation. Tu recevras un second email dès que ton créneau est confirmé.</p>
+        <div style="background: #121212; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 3px solid #F59E0B;">
+          <div style="color: #F59E0B; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px;">En attente de validation</div>
+          <div style="margin-bottom: 10px;"><strong>Service :</strong> ${SERVICE_LABELS[params.service] || params.service}</div>
           <div style="margin-bottom: 10px;"><strong>Date :</strong> ${params.date}</div>
           <div><strong>Heure :</strong> ${params.time}</div>
         </div>
@@ -41,6 +45,47 @@ export async function sendBookingConfirmation(params: {
       </div>
     `,
   })
+}
+
+// Email envoyé quand l'admin confirme le RDV
+export async function sendBookingConfirmed(params: {
+  name: string
+  email: string
+  service: string
+  date: string
+  time: string
+}) {
+  await transporter.sendMail({
+    from: `Locks Flow <${process.env.GMAIL_USER}>`,
+    to: params.email,
+    subject: '✓ RDV confirmé — Locks Flow',
+    html: `
+      <div style="font-family: sans-serif; background: #080808; color: #F2EDE5; padding: 40px; max-width: 500px; margin: 0 auto;">
+        <div style="font-size: 24px; font-weight: 900; margin-bottom: 30px;">locks<span style="color: #F97316;">.</span>flow</div>
+        <h2 style="font-size: 20px; margin-bottom: 16px;">C'est dans le flow, ${params.name} !</h2>
+        <p style="opacity: 0.8; margin-bottom: 24px;">Ton RDV est confirmé. On t'attend.</p>
+        <div style="background: #121212; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 3px solid #10B981;">
+          <div style="color: #10B981; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px;">Confirmé</div>
+          <div style="margin-bottom: 10px;"><strong>Service :</strong> ${SERVICE_LABELS[params.service] || params.service}</div>
+          <div style="margin-bottom: 10px;"><strong>Date :</strong> ${params.date}</div>
+          <div><strong>Heure :</strong> ${params.time}</div>
+        </div>
+        <p style="opacity: 0.5; font-size: 12px;">© 2025 Locks Flow — Neuilly-sur-Marne</p>
+      </div>
+    `,
+  })
+}
+
+// Alias pour compatibilité (rappels)
+export async function sendBookingConfirmation(params: {
+  name: string
+  email?: string
+  service: string
+  date: string
+  time: string
+}) {
+  if (!params.email) return
+  return sendBookingPending(params)
 }
 
 export async function sendOwnerNotification(params: {

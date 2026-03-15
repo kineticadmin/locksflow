@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { sendBookingConfirmation, sendOwnerNotification } from '@/lib/email'
+import { sendBookingPending, sendOwnerNotification } from '@/lib/email'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   Promise.all([
     sendOwnerNotification({ name, phone, service, date: dateFormatted, time }),
-    email ? sendBookingConfirmation({ name, email, service, date: dateFormatted, time }) : Promise.resolve(),
+    email ? sendBookingPending({ name, email, service, date: dateFormatted, time }) : Promise.resolve(),
   ]).catch(console.error)
 
   return NextResponse.json({ success: true, booking: data })
