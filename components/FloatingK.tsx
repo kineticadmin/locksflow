@@ -4,7 +4,7 @@ import { useIsMobile } from '@/lib/useIsMobile'
 
 export default function FloatingK() {
   const ref = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile(1100)
 
   useEffect(() => {
     if (isMobile) return

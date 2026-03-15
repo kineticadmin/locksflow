@@ -33,14 +33,15 @@ const iconBox = { width: 40, height: 40, background: 'rgba(249,115,22,0.10)', bo
 
 export default function LocationSection() {
   const isMobile = useIsMobile()
+  const isTablet = useIsMobile(1024)
   return (
     <section style={{ background: 'rgba(18,18,18,0.88)' }} id="location">
       <div className="container" style={{
         paddingTop: isMobile ? 60 : 120,
         paddingBottom: isMobile ? 60 : 120,
         display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr',
-        gap: isMobile ? 48 : 80,
+        gridTemplateColumns: isTablet ? '1fr' : '1fr 1.4fr',
+        gap: isMobile ? 48 : isTablet ? 56 : 80,
         alignItems: 'start',
       }}>
 

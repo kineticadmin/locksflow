@@ -17,6 +17,7 @@ function selectService(id: string) {
 export default function ServicesSection() {
   const gridRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
+  const isTablet = useIsMobile(1024)
 
   useEffect(() => {
     if (isMobile) return
@@ -54,11 +55,11 @@ export default function ServicesSection() {
             gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
             gap: isMobile ? 16 : 20,
             willChange: isMobile ? 'auto' : 'transform',
-            paddingTop: isMobile ? 0 : 60,
+            paddingTop: (isMobile || isTablet) ? 0 : 60,
           }}
         >
           {services.map((s, i) => (
-            <ServiceCard key={s.num} {...s} offset={!isMobile && i % 2 === 1} />
+            <ServiceCard key={s.num} {...s} offset={!isMobile && !isTablet && i % 2 === 1} />
           ))}
         </div>
       </div>

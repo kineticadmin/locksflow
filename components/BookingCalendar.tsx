@@ -52,6 +52,7 @@ export default function BookingCalendar() {
   const [success, setSuccess] = useState(false)
   const [error, setError]     = useState('')
   const isMobile = useIsMobile()
+  const isTablet = useIsMobile(1024)
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -144,7 +145,7 @@ export default function BookingCalendar() {
                 onSelect={d => { setDate(d); if (d) goTo(3) }}
                 disabled={isDisabledDay}
                 locale={fr}
-                numberOfMonths={isMobile ? 1 : 2}
+                numberOfMonths={(isMobile || isTablet) ? 1 : 2}
                 className="rdp-custom"
               />
             </div>

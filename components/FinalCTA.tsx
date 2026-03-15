@@ -7,7 +7,7 @@ export default function FinalCTA() {
   const img2Ref = useRef<HTMLDivElement>(null)
   const mouse = useRef({ x: 0, y: 0 })
   const lerped = useRef({ x: 0, y: 0 })
-  const isMobile = useIsMobile()
+  const isMobile = useIsMobile(1100)
 
   useEffect(() => {
     if (isMobile) return
