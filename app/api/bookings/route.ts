@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   const dateFormatted = format(new Date(date), 'EEEE d MMMM yyyy', { locale: fr })
 
-  Promise.all([
+  await Promise.all([
     sendOwnerNotification({ name, phone, service, date: dateFormatted, time }),
     email ? sendBookingPending({ name, email, service, date: dateFormatted, time }) : Promise.resolve(),
   ]).catch(console.error)

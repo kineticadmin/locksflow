@@ -29,7 +29,7 @@ export async function PATCH(req: NextRequest) {
   // Envoie l'email de confirmation au client quand l'admin valide
   if (status === 'confirmed' && booking?.email) {
     const dateFormatted = format(new Date(booking.date), 'EEEE d MMMM yyyy', { locale: fr })
-    sendBookingConfirmed({
+    await sendBookingConfirmed({
       name: booking.name,
       email: booking.email,
       service: booking.service,
