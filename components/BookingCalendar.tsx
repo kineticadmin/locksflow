@@ -47,6 +47,7 @@ export default function BookingCalendar() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError]     = useState('')
+  const [returningClient, setReturningClient] = useState<string | null>(null)
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
   const [availConfig, setAvailConfig] = useState<DayConfig[]>([])
@@ -90,6 +91,20 @@ export default function BookingCalendar() {
     window.addEventListener('select-service', handler)
     return () => window.removeEventListener('select-service', handler)
   }, [])
+
+  async function handlePhoneBlur() {
+    const cleaned = phone.trim()
+    if (cleaned.length < 8) return
+    try {
+      const res = await fetch(`/api/clients/lookup?phone=${encodeURIComponent(cleaned)}`)
+      const data = await res.json()
+      if (data.found) {
+        if (!name)  setName(data.name)
+        if (!email) setEmail(data.email)
+        setReturningClient(data.name.split(' ')[0])
+      }
+    } catch {}
+  }
 
   function goTo(next: number) {
     setLeaving(true)
@@ -207,9 +222,14 @@ export default function BookingCalendar() {
         {step === 4 && (
           <>
             <StepLabel n={4} label="Tes infos" />
+            {returningClient && (
+              <div style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.25)', borderRadius: 8, padding: '12px 16px', marginBottom: 12, fontSize: 13, color: '#F97316', fontWeight: 500 }}>
+                Content de te revoir, {returningClient} !
+              </div>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
               <input type="text"  placeholder="Ton prénom *"         value={name}  onChange={e => setName(e.target.value)}  style={inputStyle} />
-              <input type="tel"   placeholder="Ton téléphone *"      value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+              <input type="tel"   placeholder="Ton téléphone *"      value={phone} onChange={e => { setPhone(e.target.value); setReturningClient(null) }} onBlur={handlePhoneBlur} style={inputStyle} />
               <input type="email" placeholder="Email (confirmation)" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
             </div>
             {error && <p style={{ color: '#f87171', marginBottom: 16, fontSize: 14 }}>{error}</p>}
