@@ -1,12 +1,12 @@
 'use client'
-import { useEffect, useRef, CSSProperties, ReactNode } from 'react'
+import { useEffect, useRef, CSSProperties, ReactNode, ElementType } from 'react'
 
 interface ParallaxProps {
   children: ReactNode
-  speed?: number       // 0.05 = leger, 0.2 = fort
+  speed?: number
   style?: CSSProperties
   className?: string
-  as?: keyof JSX.IntrinsicElements
+  as?: ElementType
 }
 
 export default function Parallax({ children, speed = 0.1, style, className, as: Tag = 'div' }: ParallaxProps) {
