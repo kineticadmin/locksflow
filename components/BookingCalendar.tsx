@@ -13,11 +13,7 @@ const SERVICES = [
   { id: 'reparation', label: 'Réparation',             price: 'Sur Devis' },
 ]
 
-const TIME_SLOTS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00']
-
-function isDisabledDay(date: Date) {
-  return getDay(date) === 0 || isBefore(date, startOfDay(new Date()))
-}
+interface DayConfig { day_of_week: number; active: boolean; slots: string[] }
 
 const inputStyle: React.CSSProperties = {
   background: 'transparent',
@@ -53,6 +49,36 @@ export default function BookingCalendar() {
   const [error, setError]     = useState('')
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
+  const [availConfig, setAvailConfig] = useState<DayConfig[]>([])
+  const [availSlots, setAvailSlots] = useState<string[]>([])
+  const [loadingSlots, setLoadingSlots] = useState(false)
+
+  // Charge la config hebdo une fois au mount
+  useEffect(() => {
+    fetch('/api/availability')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setAvailConfig(data) })
+      .catch(() => {})
+  }, [])
+
+  // Charge les slots disponibles quand une date est sélectionnée
+  useEffect(() => {
+    if (!date) return
+    setLoadingSlots(true)
+    const dateStr = format(date, 'yyyy-MM-dd')
+    fetch(`/api/availability/slots?date=${dateStr}`)
+      .then(r => r.json())
+      .then(data => { if (data.slots) setAvailSlots(data.slots) })
+      .catch(() => {})
+      .finally(() => setLoadingSlots(false))
+  }, [date])
+
+  function isDisabledDay(d: Date) {
+    if (isBefore(d, startOfDay(new Date()))) return true
+    if (availConfig.length === 0) return getDay(d) === 0 // fallback
+    const cfg = availConfig.find(c => c.day_of_week === getDay(d))
+    return !cfg || !cfg.active
+  }
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -156,8 +182,13 @@ export default function BookingCalendar() {
         {step === 3 && (
           <>
             <StepLabel n={3} label="Choisis un créneau" />
+            {loadingSlots ? (
+              <div style={{ color: '#888', fontSize: 13, padding: '20px 0' }}>Chargement des créneaux...</div>
+            ) : availSlots.length === 0 ? (
+              <div style={{ color: '#888', fontSize: 13, padding: '20px 0' }}>Aucun créneau disponible pour cette date.</div>
+            ) : (
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)', gap: 8 }}>
-              {TIME_SLOTS.map(slot => (
+              {availSlots.map(slot => (
                 <button
                   key={slot}
                   type="button"
@@ -168,6 +199,7 @@ export default function BookingCalendar() {
                 </button>
               ))}
             </div>
+            )}
             <BackBtn onClick={() => goTo(2)} />
           </>
         )}
