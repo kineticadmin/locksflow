@@ -1,16 +1,18 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 export default function FloatingK() {
   const ref = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
+    if (isMobile) return
     const el = ref.current
     if (!el) return
     let rafId: number
 
     const update = () => {
-      // Scroll plus lentement que le site (0.4x au lieu de 1x)
       el.style.transform = `translateY(${window.scrollY * 0.7}px)`
     }
 
@@ -22,7 +24,9 @@ export default function FloatingK() {
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [isMobile])
+
+  if (isMobile) return null
 
   return (
     <div

@@ -4,6 +4,7 @@ import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 import { format, isBefore, startOfDay, getDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 const SERVICES = [
   { id: 'retwist',    label: 'Le Retwist',            price: '50€' },
@@ -25,7 +26,7 @@ const inputStyle: React.CSSProperties = {
   padding: '14px 16px',
   outline: 'none',
   width: '100%',
-  fontSize: 15,
+  fontSize: 16,
   borderRadius: 4,
 }
 
@@ -33,21 +34,7 @@ function StepLabel({ n, label }: { n: number; label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-unbounded)', fontSize: 12, fontWeight: 900, color: '#080808', flexShrink: 0 }}>{n}</div>
-      <span style={{ fontFamily: 'var(--font-unbounded)', fontSize: 14, color: '#F2EDE5' }}>{label}</span>
-    </div>
-  )
-}
-
-function AnimatedStep({ children, stepKey }: { children: React.ReactNode; stepKey: string | number }) {
-  const [cls, setCls] = useState('step-in')
-
-  useEffect(() => {
-    setCls('step-in')
-  }, [stepKey])
-
-  return (
-    <div key={stepKey} className={cls} style={{ minHeight: 80 }}>
-      {children}
+      <span style={{ fontFamily: 'var(--font-unbounded)', fontSize: 13, color: '#F2EDE5' }}>{label}</span>
     </div>
   )
 }
@@ -56,6 +43,15 @@ export default function BookingCalendar() {
   const [step, setStep]       = useState(1)
   const [leaving, setLeaving] = useState(false)
   const [service, setService] = useState('')
+  const [date, setDate]       = useState<Date>()
+  const [time, setTime]       = useState('')
+  const [name, setName]       = useState('')
+  const [phone, setPhone]     = useState('')
+  const [email, setEmail]     = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError]     = useState('')
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -67,14 +63,6 @@ export default function BookingCalendar() {
     window.addEventListener('select-service', handler)
     return () => window.removeEventListener('select-service', handler)
   }, [])
-  const [date, setDate]       = useState<Date>()
-  const [time, setTime]       = useState('')
-  const [name, setName]       = useState('')
-  const [phone, setPhone]     = useState('')
-  const [email, setEmail]     = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError]     = useState('')
 
   function goTo(next: number) {
     setLeaving(true)
@@ -104,33 +92,29 @@ export default function BookingCalendar() {
 
   if (success) {
     return (
-      <div className="step-in" style={{ textAlign: 'center', padding: '60px 0' }}>
-        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 28, color: '#F2EDE5', marginBottom: 12 }}>C&apos;est dans le flow !</div>
+      <div className="step-in" style={{ textAlign: 'center', padding: '40px 0' }}>
+        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 24, color: '#F2EDE5', marginBottom: 12 }}>C&apos;est dans le flow !</div>
         <p style={{ color: '#F2EDE5', opacity: 0.7 }}>Confirmation envoyée. On t&apos;attend !</p>
       </div>
     )
   }
 
-  // Indicateur de progression
   const steps = ['Service', 'Date', 'Créneau', 'Infos']
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
 
-      {/* Barre de progression */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 40 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         {steps.map((s, i) => (
           <div key={s} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ height: 2, background: step > i + 1 ? '#F97316' : step === i + 1 ? '#F97316' : 'rgba(255,255,255,0.12)', transition: 'background 0.3s' }} />
-            <span style={{ fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', color: step >= i + 1 ? '#F97316' : '#555', fontFamily: 'var(--font-unbounded)', transition: 'color 0.3s' }}>{s}</span>
+            <span style={{ fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', color: step >= i + 1 ? '#F97316' : '#555', fontFamily: 'var(--font-unbounded)', transition: 'color 0.3s' }}>{s}</span>
           </div>
         ))}
       </div>
 
-      {/* Contenu animé */}
       <div className={leaving ? 'step-out' : 'step-in'} key={step}>
 
-        {/* Step 1 — Service */}
         {step === 1 && (
           <>
             <StepLabel n={1} label="Choisis ton service" />
@@ -140,44 +124,44 @@ export default function BookingCalendar() {
                   key={s.id}
                   type="button"
                   onClick={() => { setService(s.id); goTo(2) }}
-                  style={{ padding: '20px 16px', border: `1px solid ${service === s.id ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: service === s.id ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
+                  style={{ padding: '16px 12px', border: `1px solid ${service === s.id ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: service === s.id ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
                 >
-                  <div style={{ fontFamily: 'var(--font-unbounded)', color: '#F2EDE5', marginBottom: 6, fontSize: 12 }}>{s.label}</div>
-                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 14 }}>{s.price}</div>
+                  <div style={{ fontFamily: 'var(--font-unbounded)', color: '#F2EDE5', marginBottom: 6, fontSize: 11 }}>{s.label}</div>
+                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 13 }}>{s.price}</div>
                 </button>
               ))}
             </div>
           </>
         )}
 
-        {/* Step 2 — Date */}
         {step === 2 && (
           <>
             <StepLabel n={2} label="Choisis une date" />
-            <DayPicker
-              mode="single"
-              selected={date}
-              onSelect={d => { setDate(d); if (d) goTo(3) }}
-              disabled={isDisabledDay}
-              locale={fr}
-              numberOfMonths={2}
-              className="rdp-custom"
-            />
+            <div style={{ overflowX: 'auto' }}>
+              <DayPicker
+                mode="single"
+                selected={date}
+                onSelect={d => { setDate(d); if (d) goTo(3) }}
+                disabled={isDisabledDay}
+                locale={fr}
+                numberOfMonths={isMobile ? 1 : 2}
+                className="rdp-custom"
+              />
+            </div>
             <BackBtn onClick={() => goTo(1)} />
           </>
         )}
 
-        {/* Step 3 — Créneau */}
         {step === 3 && (
           <>
             <StepLabel n={3} label="Choisis un créneau" />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)', gap: 8 }}>
               {TIME_SLOTS.map(slot => (
                 <button
                   key={slot}
                   type="button"
                   onClick={() => { setTime(slot); goTo(4) }}
-                  style={{ padding: '10px', border: `1px solid ${time === slot ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: time === slot ? '#F97316' : 'transparent', color: time === slot ? '#080808' : '#F2EDE5', fontFamily: 'var(--font-unbounded)', fontSize: 12, cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
+                  style={{ padding: '10px', border: `1px solid ${time === slot ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: time === slot ? '#F97316' : 'transparent', color: time === slot ? '#080808' : '#F2EDE5', fontFamily: 'var(--font-unbounded)', fontSize: 11, cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
                 >
                   {slot}
                 </button>
@@ -187,21 +171,20 @@ export default function BookingCalendar() {
           </>
         )}
 
-        {/* Step 4 — Infos + submit */}
         {step === 4 && (
           <>
             <StepLabel n={4} label="Tes infos" />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
-              <input type="text"  placeholder="Ton prénom *"           value={name}  onChange={e => setName(e.target.value)}  style={inputStyle} />
-              <input type="tel"   placeholder="Ton téléphone *"        value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
-              <input type="email" placeholder="Email (confirmation)"   value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+              <input type="text"  placeholder="Ton prénom *"         value={name}  onChange={e => setName(e.target.value)}  style={inputStyle} />
+              <input type="tel"   placeholder="Ton téléphone *"      value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+              <input type="email" placeholder="Email (confirmation)" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
             </div>
             {error && <p style={{ color: '#f87171', marginBottom: 16, fontSize: 14 }}>{error}</p>}
             <button
               type="submit"
               disabled={loading || !name || !phone}
               className="btn-fill"
-            style={{ width: '100%', background: '#F97316', color: '#080808', fontFamily: 'var(--font-unbounded)', fontWeight: 900, padding: '18px', fontSize: 15, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', opacity: (!name || !phone) ? 0.4 : 1, transition: '0.2s', borderRadius: 4 }}
+              style={{ width: '100%', background: '#F97316', color: '#080808', fontFamily: 'var(--font-unbounded)', fontWeight: 900, padding: '16px', fontSize: 14, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', opacity: (!name || !phone) ? 0.4 : 1, transition: '0.2s', borderRadius: 4 }}
             >
               {loading ? 'Envoi...' : 'Valider mon RDV'}
             </button>
@@ -220,7 +203,7 @@ function BackBtn({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
       className="btn-fill"
-      style={{ marginTop: 24, background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#F2EDE5', fontSize: 13, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 100, transition: '0.2s' }}
+      style={{ marginTop: 24, background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#F2EDE5', fontSize: 12, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 100, transition: '0.2s' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#F97316'; (e.currentTarget as HTMLElement).style.color = '#F97316' }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.2)'; (e.currentTarget as HTMLElement).style.color = '#F2EDE5' }}
     >

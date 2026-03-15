@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 const services = [
   { id: 'retwist',    num: '01', name: 'Retwist',               desc: 'Le soin régulier pour garder tes locks propres, bien définies et en bonne santé. On retravaille chaque section avec soin.',                             price: '50€',      unit: '/ session' },
@@ -15,8 +16,10 @@ function selectService(id: string) {
 
 export default function ServicesSection() {
   const gridRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
+    if (isMobile) return
     let raf: number
     const onScroll = () => {
       raf = requestAnimationFrame(() => {
@@ -29,16 +32,16 @@ export default function ServicesSection() {
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
-  }, [])
+  }, [isMobile])
 
   return (
     <section style={{ background: 'transparent', overflow: 'hidden' }} id="services">
-      <div className="container" style={{ paddingTop: 120, paddingBottom: 160 }}>
-        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#F97316', fontWeight: 500, marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div className="container" style={{ paddingTop: isMobile ? 60 : 120, paddingBottom: isMobile ? 80 : 160 }}>
+        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#F97316', fontWeight: 500, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
           Ce qu&apos;on fait
         </div>
-        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(36px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: 80, color: '#F2EDE5' }}>
+        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(32px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: isMobile ? 40 : 80, color: '#F2EDE5' }}>
           Des mains<br />qui{' '}
           <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', color: '#F97316', fontWeight: 400 }}>savent.</em>
         </h2>
@@ -46,10 +49,16 @@ export default function ServicesSection() {
         <div
           ref={gridRef}
           data-no-reveal
-          style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, willChange: 'transform', paddingTop: 60 }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: isMobile ? 16 : 20,
+            willChange: isMobile ? 'auto' : 'transform',
+            paddingTop: isMobile ? 0 : 60,
+          }}
         >
           {services.map((s, i) => (
-            <ServiceCard key={s.num} {...s} offset={i % 2 === 1} />
+            <ServiceCard key={s.num} {...s} offset={!isMobile && i % 2 === 1} />
           ))}
         </div>
       </div>
@@ -66,7 +75,7 @@ function ServiceCard({ id, num, name, desc, price, unit, offset }: { id: string;
         background: '#0d0d0d',
         border: '1px solid rgba(255,255,255,0.07)',
         borderRadius: 24,
-        padding: 48,
+        padding: 'clamp(24px, 4vw, 48px)',
         position: 'relative',
         overflow: 'hidden',
         cursor: 'pointer',
@@ -86,14 +95,14 @@ function ServiceCard({ id, num, name, desc, price, unit, offset }: { id: string;
         el.style.transform = `translateY(${base}px)`
       }}
     >
-      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#F97316', opacity: 0.5, marginBottom: 24 }}>{num}</div>
-      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 22, fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: '#F2EDE5' }}>{name}</div>
-      <p style={{ fontSize: 14, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 32, fontFamily: 'var(--font-unbounded)' }}>{desc}</p>
+      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#F97316', opacity: 0.5, marginBottom: 20 }}>{num}</div>
+      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: '#F2EDE5' }}>{name}</div>
+      <p style={{ fontSize: 13, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 28, fontFamily: 'var(--font-unbounded)' }}>{desc}</p>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 28, fontWeight: 900, color: '#F97316' }}>
-          {price}{unit && <span style={{ fontSize: 14, fontWeight: 400, color: '#888', fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}
+        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 900, color: '#F97316' }}>
+          {price}{unit && <span style={{ fontSize: 13, fontWeight: 400, color: '#888', fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}
         </div>
-        <div style={{ fontSize: 12, fontFamily: 'var(--font-unbounded)', color: 'rgba(242,237,229,0.3)', letterSpacing: 1 }}>
+        <div style={{ fontSize: 11, fontFamily: 'var(--font-unbounded)', color: 'rgba(242,237,229,0.3)', letterSpacing: 1 }}>
           Reserver →
         </div>
       </div>

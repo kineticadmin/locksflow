@@ -138,6 +138,26 @@ body::before {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  padding-left: clamp(24px, 4vw, 80px);
-  padding-right: clamp(24px, 4vw, 80px);
+  padding-left: clamp(20px, 4vw, 80px);
+  padding-right: clamp(20px, 4vw, 80px);
+}
+
+/* ── Mobile ────────────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    cursor: auto;
+    overflow-x: hidden;
+  }
+
+  /* Marquee — marges négatives réduites sur mobile */
+  .marquee-wrap {
+    margin-left: -20px !important;
+    margin-right: -20px !important;
+  }
+
+  /* DayPicker — 1 mois sur mobile */
+  .rdp-custom .rdp-months {
+    gap: 0 !important;
+    flex-direction: column;
+  }
 }

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Locks Flow — More than a Salon, an Attitude</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Playfair+Display:ital@1&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* --- VARIABLES & BASE --- */
+        :root {
+            --black: #080808;
+            --white: #F2EDE5;
+            --orange: #F97316;
+            --orange-bright: #FF8C38;
+            --gray: #121212;
+            --text-muted: #A0A0A0;
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: 'DM Sans', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* --- TEXTURE DE GRAIN (Effet Visuel) --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* --- CURSOR --- */
+        .cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: var(--orange);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.3s;
+        }
+
+        .cursor.big {
+            width: 60px;
+            height: 60px;
+            opacity: 0.3;
+            background: var(--white);
+            mix-blend-mode: difference;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 20px;
+            text-transform: lowercase;
+        }
+
+        .nav-logo span {
+            color: var(--orange);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+            color: var(--orange);
+        }
+
+        .nav-cta {
+            background: var(--orange);
+            color: var(--black) !important;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            opacity: 1 !important;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 50px;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: grayscale(0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero-headline {
+            font-family: 'Unbounded';
+            font-size: clamp(60px, 12vw, 140px);
+            line-height: 0.85;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .hero-headline em {
+            font-family: 'Playfair Display';
+            color: var(--orange);
+            font-style: italic;
+            text-transform: lowercase;
+        }
+
+        .hero-sub {
+            font-size: 20px;
+            max-width: 500px;
+            opacity: 0.7;
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        /* --- FLOATING IMAGES (Editorial Style) --- */
+        .editorial-img {
+            position: absolute;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            z-index: 1;
+            transition: 0.5s ease;
+        }
+
+        .img-1 {
+            width: 300px;
+            right: 10%;
+            top: 15%;
+            transform: rotate(5deg);
+        }
+
+        .img-2 {
+            width: 250px;
+            right: 25%;
+            bottom: 10%;
+            transform: rotate(-5deg);
+        }
+
+        /* --- MARQUEE --- */
+        .marquee {
+            background: var(--orange);
+            color: var(--black);
+            padding: 20px 0;
+            font-family: 'Unbounded';
+            font-weight: 900;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+            font-size: 40px;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* --- SERVICES (Cards with Hover Effect) --- */
+        .services {
+            padding: 150px 50px;
+            background: var(--black);
+        }
+
+        .section-title {
+            font-family: 'Unbounded';
+            font-size: 50px;
+            margin-bottom: 80px;
+        }
+
+        .section-title span {
+            color: var(--orange);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .service-card {
+            background: var(--black);
+            padding: 60px 40px;
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .service-card:hover {
+            background: var(--orange);
+            color: var(--black);
+        }
+
+        .service-card h3 {
+            font-family: 'Unbounded';
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .service-card p {
+            opacity: 0.6;
+            margin-bottom: 30px;
+        }
+
+        .service-card:hover p {
+            color: var(--black);
+            opacity: 0.8;
+        }
+
+        .service-price {
+            font-family: 'Unbounded';
+            font-weight: 900;
+            font-size: 32px;
+        }
+
+        /* --- COMMUNITY SECTION (The Vibe) --- */
+        .community {
+            padding: 150px 50px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+            background: var(--gray);
+        }
+
+        .community-text h2 {
+            font-family: 'Unbounded';
+            font-size: 60px;
+            line-height: 1;
+            margin-bottom: 30px;
+        }
+
+        .community-video-preview {
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: #222;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 8px solid #1a1a1a;
+        }
+
+        /* --- CTA FINAL --- */
+        .final-cta {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: url('your-model-image.png');
+            /* Utilise l'image avec le manteau orange ici */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .final-cta::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .final-cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-huge {
+            display: inline-block;
+            padding: 30px 60px;
+            background: var(--orange);
+            color: var(--black);
+            font-family: 'Unbounded';
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 100px;
+            font-size: 24px;
+            transition: 0.3s;
+        }
+
+        .btn-huge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px var(--orange);
+        }
+
+        /* Responsiveness */
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .editorial-img {
+                display: none;
+            }
+
+            .community {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cursor" id="cursor"></div>
+
+    <nav>
+        <div class="nav-logo">locks<span>.</span>flow</div>
+        <ul class="nav-links">
+            <li><a href="#about">L'Attitude</a></li>
+            <li><a href="#services">Le Menu</a></li>
+            <li><a href="#community">Le Crew</a></li>
+            <li><a href="tel:+33749696141" class="nav-cta">Book ton Flow</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <!-- Remplace par une vidéo de tes travaux (retwist en slow motion par exemple) -->
+        <video class="hero-video-bg" autoplay muted loop playsinline>
+            <source
+                src="https://player.vimeo.com/external/494252666.sd.mp4?s=72ad57a584cf800d9a0832a9ccb369ad84245d62&profile_id=165&oauth2_token_id=57447761"
+                type="video/mp4">
+        </video>
+
+        <!-- Images flottantes (Tes photos de modèles) -->
+        <div class="editorial-img img-1 reveal">
+            <img src="./images/Uj-hLv0GjTAvIBmP9qoW8.jpg" alt="Locks Style" style="width:100%">
+        </div>
+        <div class="editorial-img img-2 reveal">
+            <img src="./images/nCXvR6Egslx41-5n8LJAW-7982x5321.jpg" alt="Detail" style="width:100%">
+        </div>
+
+        <div class="hero-content">
+            <h1 class="hero-headline">More than<br>just <em>locks.</em></h1>
+            <p class="hero-sub">On ne coiffe pas des cheveux, on sculpte ton identité. Bienvenue dans la communauté
+                Locks Flow.</p>
+            <a href="#services" class="nav-cta" style="padding: 20px 40px; font-size: 16px;">Découvrir l'univers</a>
+        </div>
+    </section>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            RETWIST • DÉPART • REPAIR • VIBE • COMMUNITY • NEUILLY-SUR-MARNE • 93 • NO CHEMICALS • JUST ART •&nbsp;
+            RETWIST • DÉPART • REPAIR • VIBE • COMMUNITY • NEUILLY-SUR-MARNE • 93 • NO CHEMICALS • JUST ART •&nbsp;
+        </div>
+    </div>
+
+    <section class="services" id="services">
+        <h2 class="section-title">Clean <span>Tools.</span><br>Better <span>Flow.</span></h2>
+        <div class="services-grid">
+            <div class="service-card reveal">
+                <h3>Le Retwist</h3>
+                <p>L'entretien signature. Précision chirurgicale pour des racines nettes et un cuir chevelu sain.</p>
+                <div class="service-price">50€</div>
+            </div>
+            <div class="service-card reveal">
+                <h3>Le Départ</h3>
+                <p>On pose les bases de ton futur. Méthode adaptée à ta texture de cheveu.</p>
+                <div class="service-price">Sur Devis</div>
+            </div>
+            <div class="service-card reveal">
+                <h3>Détartrage</h3>
+                <p>Le reset total. On libère tes locks des résidus pour retrouver légèreté et éclat.</p>
+                <div class="service-price">40€</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="community" id="community">
+        <div class="community-video-preview reveal">
+            <!-- Ici une vidéo verticale type Instagram Reel de ton salon -->
+            <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
+                <source
+                    src="https://player.vimeo.com/external/394344155.sd.mp4?s=985eb930e461b369c7330263f68484196d4f488a&profile_id=165&oauth2_token_id=57447761"
+                    type="video/mp4">
+            </video>
+        </div>
+        <div class="community-text reveal">
+            <h2>Join the<br><span>Flow Crew.</span></h2>
+            <p style="font-size: 20px; opacity: 0.7; margin-bottom: 30px;">
+                C'est pas juste un rendez-vous, c'est un lifestyle. Suis nos transformations quotidiennes et partage ton
+                évolution avec le tag #LocksFlowInspired.
+            </p>
+            <div class="social-links">
+                <a href="https://instagram.com/lock.flowinspired" target="_blank" class="btn-huge"
+                    style="font-size: 14px; padding: 15px 30px;">Instagram</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="final-cta-content reveal">
+            <h2 class="hero-headline" style="font-size: clamp(40px, 8vw, 80px);">Prêt à changer<br>de <em>dimension
+                    ?</em></h2>
+            <br><br>
+            <a href="tel:+33749696141" class="btn-huge">Prendre RDV maintenant</a>
+        </div>
+    </section>
+
+    <footer>
+        <div
+            style="padding: 50px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div class="nav-logo">locks<span>.</span>flow</div>
+            <div style="color: var(--text-muted); font-size: 12px;">© 2025 LOCKS FLOW — DESIGNED FOR THE BOLD.</div>
+            <div style="display: flex; gap: 20px;">
+                <a href="#" style="color: var(--white); text-decoration: none; font-size: 12px;">TikTok</a>
+                <a href="#" style="color: var(--white); text-decoration: none; font-size: 12px;">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Cursor custom
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('a, .service-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+        });
+
+        // Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            el.style.opacity = "0";
+            el.style.transform = "translateY(50px)";
+            el.style.transition = "1s cubic-bezier(0.19, 1, 0.22, 1)";
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

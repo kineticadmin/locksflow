@@ -1,5 +1,7 @@
+'use client'
 import Link from 'next/link'
 import BookingCalendar from './BookingCalendar'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 function IconPin() {
   return (
@@ -30,65 +32,70 @@ function IconClock() {
 const iconBox = { width: 40, height: 40, background: 'rgba(249,115,22,0.10)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 } as const
 
 export default function LocationSection() {
+  const isMobile = useIsMobile()
   return (
     <section style={{ background: 'rgba(18,18,18,0.88)' }} id="location">
-      <div className="container" style={{ paddingTop: 120, paddingBottom: 120, display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 80, alignItems: 'start' }}>
+      <div className="container" style={{
+        paddingTop: isMobile ? 60 : 120,
+        paddingBottom: isMobile ? 60 : 120,
+        display: 'grid',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr',
+        gap: isMobile ? 48 : 80,
+        alignItems: 'start',
+      }}>
 
-      {/* Colonne gauche — infos */}
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: '#F97316', fontWeight: 500, marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
-          Nous trouver
-        </div>
-        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(28px,3.5vw,48px)', fontWeight: 900, letterSpacing: -1.5, lineHeight: 1.1, marginBottom: 32, color: '#F2EDE5' }}>
-          On est<br />à{' '}
-          <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400, color: '#F97316' }}>Neuilly.</em>
-          <br />T&apos;es le bienvenu.
-        </h2>
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: '#F97316', fontWeight: 500, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
+            Nous trouver
+          </div>
+          <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(24px,3.5vw,48px)', fontWeight: 900, letterSpacing: -1.5, lineHeight: 1.1, marginBottom: 32, color: '#F2EDE5' }}>
+            On est<br />à{' '}
+            <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400, color: '#F97316' }}>Neuilly.</em>
+            <br />T&apos;es le bienvenu.
+          </h2>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 40 }}>
-          {/* Adresse cliquable */}
-          <a href="https://maps.google.com/?q=Neuilly-sur-Marne,93330" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'flex-start', gap: 16, textDecoration: 'none' }}>
-            <div style={iconBox}><IconPin /></div>
-            <div>
-              <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>Neuilly-sur-Marne</strong>
-              <small style={{ color: '#888', fontSize: 13 }}>93330 — Seine-Saint-Denis · Ouvrir dans Maps</small>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 40 }}>
+            <a href="https://maps.google.com/?q=Neuilly-sur-Marne,93330" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'flex-start', gap: 16, textDecoration: 'none' }}>
+              <div style={iconBox}><IconPin /></div>
+              <div>
+                <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>Neuilly-sur-Marne</strong>
+                <small style={{ color: '#888', fontSize: 13 }}>93330 — Seine-Saint-Denis · Ouvrir dans Maps</small>
+              </div>
+            </a>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div style={iconBox}><IconPhone /></div>
+              <div>
+                <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>
+                  <a href="tel:+33749696141" style={{ color: 'inherit', textDecoration: 'none' }}>07 49 69 61 41</a>
+                </strong>
+                <small style={{ color: '#888', fontSize: 13 }}>Répondons à vos messages</small>
+              </div>
             </div>
-          </a>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-            <div style={iconBox}><IconPhone /></div>
-            <div>
-              <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>
-                <a href="tel:+33749696141" style={{ color: 'inherit', textDecoration: 'none' }}>07 49 69 61 41</a>
-              </strong>
-              <small style={{ color: '#888', fontSize: 13 }}>Répondons à vos messages</small>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div style={iconBox}><IconClock /></div>
+              <div>
+                <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>Sur rendez-vous</strong>
+                <small style={{ color: '#888', fontSize: 13 }}>Lundi – Samedi</small>
+              </div>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-            <div style={iconBox}><IconClock /></div>
-            <div>
-              <strong style={{ display: 'block', fontSize: 15, fontWeight: 500, marginBottom: 2, color: '#F2EDE5' }}>Sur rendez-vous</strong>
-              <small style={{ color: '#888', fontSize: 13 }}>Lundi – Samedi</small>
-            </div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <SocialBtn href="https://instagram.com/lock.flowinspired" label="lock.flowinspired" />
+            <SocialBtn href="https://tiktok.com/@locksflow" label="Locks Flow" />
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <SocialBtn href="https://instagram.com/lock.flowinspired" label="lock.flowinspired" />
-          <SocialBtn href="https://tiktok.com/@locksflow" label="Locks Flow" />
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: '#F97316', fontWeight: 500, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
+            Prendre RDV
+          </div>
+          <BookingCalendar />
         </div>
-      </div>
-
-      {/* Colonne droite — booking */}
-      <div>
-        <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: '#F97316', fontWeight: 500, marginBottom: 48, display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
-          Prendre RDV
-        </div>
-        <BookingCalendar />
-      </div>
 
       </div>
     </section>

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 interface CardConfig {
   src: string
@@ -11,7 +12,7 @@ interface CardConfig {
   scrollRotate: number
   scrollScale: number
   zIndex: number
-  mouseDepth: number  // intensité de la réaction souris
+  mouseDepth: number
 }
 
 const cards: CardConfig[] = [
@@ -46,8 +47,11 @@ export default function FloatingCards() {
   const triggerRef = useRef<number | null>(null)
   const mouse = useRef({ x: 0, y: 0 })
   const lerped = useRef({ x: 0, y: 0 })
+  const isMobile = useIsMobile()
 
   useEffect(() => {
+    if (isMobile) return
+
     let rafId: number
 
     const getTrigger = () => {
@@ -65,7 +69,6 @@ export default function FloatingCards() {
     const update = () => {
       rafId = requestAnimationFrame(update)
 
-      // Lerp souris
       lerped.current.x += (mouse.current.x - lerped.current.x) * 0.06
       lerped.current.y += (mouse.current.y - lerped.current.y) * 0.06
 
@@ -83,7 +86,6 @@ export default function FloatingCards() {
         const syClamp = Math.min(sy, trigger)
         let translateY = sy * card.scrollSpeed
         let translateX = 0
-        let opacity = 1
 
         if (sy >= trigger) {
           const past = sy - trigger
@@ -96,13 +98,11 @@ export default function FloatingCards() {
 
         const rotate = card.initialRotate + (syClamp / 1000) * card.scrollRotate
         const scale = 1 + (syClamp / 1000) * card.scrollScale
-
-        // Offset souris — chaque carte à une profondeur différente
         const mx = lerped.current.x * card.mouseDepth
         const my = lerped.current.y * card.mouseDepth
 
         el.style.transform = `translateY(${translateY + my}px) translateX(${translateX + mx}px) rotate(${rotate}deg) scale(${scale})`
-        el.style.opacity = String(opacity)
+        el.style.opacity = '1'
       })
     }
 
@@ -115,7 +115,9 @@ export default function FloatingCards() {
       window.removeEventListener('resize', onResize)
       cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [isMobile])
+
+  if (isMobile) return null
 
   return (
     <>
@@ -138,11 +140,7 @@ export default function FloatingCards() {
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={card.src}
-            alt=""
-            style={{ display: 'block', width: '100%', height: 'auto' }}
-          />
+          <img src={card.src} alt="" style={{ display: 'block', width: '100%', height: 'auto' }} />
         </div>
       ))}
     </>
