@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useIsMobile } from '@/lib/useIsMobile'
 
-interface Service { id: string; name: string; desc: string; price: string; unit: string }
+interface Service { id: string; name: string; description: string; price: string; unit: string }
 
 function selectService(name: string) {
   window.dispatchEvent(new CustomEvent('select-service', { detail: { service: name } }))
@@ -70,7 +70,7 @@ export default function ServicesSection() {
   )
 }
 
-function ServiceCard({ num, name, desc, price, unit, offset }: { num: string; name: string; desc: string; price: string; unit: string; offset: boolean }) {
+function ServiceCard({ num, name, description, price, unit, offset }: { num: string; name: string; description: string; price: string; unit: string; offset: boolean }) {
   const base = offset ? -60 : 0
   return (
     <div
@@ -101,7 +101,7 @@ function ServiceCard({ num, name, desc, price, unit, offset }: { num: string; na
     >
       <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#F97316', opacity: 0.5, marginBottom: 20 }}>{num}</div>
       <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: '#F2EDE5' }}>{name}</div>
-      <p style={{ fontSize: 13, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 28, fontFamily: 'var(--font-unbounded)' }}>{desc}</p>
+      <p style={{ fontSize: 13, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 28, fontFamily: 'var(--font-unbounded)' }}>{description}</p>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 900, color: '#F97316' }}>
           {price}{unit && <span style={{ fontSize: 13, fontWeight: 400, color: '#888', fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}

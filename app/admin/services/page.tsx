@@ -7,7 +7,7 @@ import { useIsMobile } from '@/lib/useIsMobile'
 interface Service {
   id: string
   name: string
-  desc: string
+  description: string
   price: string
   unit: string
   active: boolean
@@ -15,7 +15,7 @@ interface Service {
 }
 
 type FormState = Omit<Service, 'id' | 'sort_order'>
-const EMPTY: FormState = { name: '', desc: '', price: 'Sur devis', unit: '', active: true }
+const EMPTY: FormState = { name: '', description: '', price: 'Sur devis', unit: '', active: true }
 
 const NAV_ITEMS = [
   { href: '/admin/bookings',     label: 'RDV' },
@@ -104,7 +104,7 @@ export default function AdminServices() {
   function startEdit(s: Service) {
     setEditing(s)
     setCreating(true)
-    setForm({ name: s.name, desc: s.desc, price: s.price, unit: s.unit, active: s.active })
+    setForm({ name: s.name, description: s.description, price: s.price, unit: s.unit, active: s.active })
   }
 
   function cancel() {
@@ -192,7 +192,7 @@ export default function AdminServices() {
                         <span style={{ fontSize: 9, color: '#444', fontFamily: 'var(--font-unbounded)', letterSpacing: 1, border: '1px solid #333', padding: '2px 6px', borderRadius: 4 }}>INACTIF</span>
                       )}
                     </div>
-                    <p style={{ color: '#555', fontSize: 12, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.desc}</p>
+                    <p style={{ color: '#555', fontSize: 12, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.description}</p>
                   </div>
 
                   {/* Actions */}
@@ -241,8 +241,8 @@ export default function AdminServices() {
               />
               <textarea
                 placeholder="Description"
-                value={form.desc}
-                onChange={e => setForm(f => ({ ...f, desc: e.target.value }))}
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={3}
                 style={{ ...input, resize: 'vertical' }}
               />
