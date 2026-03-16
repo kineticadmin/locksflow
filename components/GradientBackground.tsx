@@ -1,10 +1,12 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useTheme } from '@/lib/ThemeContext'
 
 export default function GradientBackground() {
   const ref = useRef<HTMLDivElement>(null)
   const mouse = useRef({ x: 0.3, y: 0.5 })
   const lerped = useRef({ x: 0.3, y: 0.5 })
+  const { isDark } = useTheme()
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -22,12 +24,21 @@ export default function GradientBackground() {
       if (el) {
         const x = lerped.current.x * 100
         const y = lerped.current.y * 100
-        el.style.background = `
-          radial-gradient(ellipse 60% 50% at ${x}% ${y}%, rgba(249,115,22,0.10) 0%, transparent 60%),
-          radial-gradient(ellipse at ${100 - x * 0.6}% ${100 - y * 0.8}%, #1A0A2E 0%, transparent 55%),
-          radial-gradient(ellipse at ${x * 0.4}% ${100 - y * 0.4}%, #0D2818 0%, transparent 50%),
-          linear-gradient(135deg, #080808 0%, #120A04 40%, #0A0A14 100%)
-        `
+        if (isDark) {
+          el.style.background = `
+            radial-gradient(ellipse 60% 50% at ${x}% ${y}%, rgba(249,115,22,0.10) 0%, transparent 60%),
+            radial-gradient(ellipse at ${100 - x * 0.6}% ${100 - y * 0.8}%, #1A0A2E 0%, transparent 55%),
+            radial-gradient(ellipse at ${x * 0.4}% ${100 - y * 0.4}%, #0D2818 0%, transparent 50%),
+            linear-gradient(135deg, #080808 0%, #120A04 40%, #0A0A14 100%)
+          `
+        } else {
+          el.style.background = `
+            radial-gradient(ellipse 60% 50% at ${x}% ${y}%, rgba(249,115,22,0.07) 0%, transparent 60%),
+            radial-gradient(ellipse at ${100 - x * 0.6}% ${100 - y * 0.8}%, #F5EDE8 0%, transparent 55%),
+            radial-gradient(ellipse at ${x * 0.4}% ${100 - y * 0.4}%, #EEF0E8 0%, transparent 50%),
+            linear-gradient(135deg, #FAF7F2 0%, #F5EEE8 40%, #F0F0F5 100%)
+          `
+        }
       }
 
       rafId = requestAnimationFrame(animate)
@@ -38,7 +49,7 @@ export default function GradientBackground() {
       window.removeEventListener('mousemove', onMove)
       cancelAnimationFrame(rafId)
     }
-  }, [])
+  }, [isDark])
 
   return (
     <div

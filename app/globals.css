@@ -35,6 +35,7 @@ body {
   overflow-x: hidden;
   cursor: none;
   position: relative;
+  transition: background 0.3s, color 0.3s;
 }
 
 body::before {
@@ -56,7 +57,7 @@ body::before {
   mix-blend-mode: difference;
 }
 
-/* DayPicker custom — override tout */
+/* DayPicker custom — dark (default) */
 .rdp-custom {
   --rdp-accent-color: #F97316 !important;
   --rdp-accent-background-color: rgba(249,115,22,0.15) !important;
@@ -94,6 +95,17 @@ body::before {
 .rdp-custom .rdp-nav button svg { stroke: #F97316; fill: #F97316; }
 .rdp-custom a, .rdp-custom button { outline: none; }
 .rdp-custom :focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249,115,22,0.4); }
+
+/* DayPicker custom — light mode overrides */
+[data-theme="light"] .rdp-custom {
+  color: #1A1209;
+}
+[data-theme="light"] .rdp-custom .rdp-caption_label { color: #1A1209; }
+[data-theme="light"] .rdp-custom .rdp-head_cell { color: rgba(26,18,9,0.4); }
+[data-theme="light"] .rdp-custom .rdp-day_button { color: #1A1209; }
+[data-theme="light"] .rdp-custom .rdp-day_button:hover:not(:disabled) { background: rgba(249,115,22,0.15) !important; color: #1A1209; }
+[data-theme="light"] .rdp-custom .rdp-disabled .rdp-day_button,
+[data-theme="light"] .rdp-custom .rdp-day_button:disabled { color: rgba(26,18,9,0.2) !important; }
 
 @keyframes marquee {
   0% { transform: translateX(0); }

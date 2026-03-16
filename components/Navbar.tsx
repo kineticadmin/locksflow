@@ -2,6 +2,7 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useIsMobile } from '@/lib/useIsMobile'
+import ThemeSwitcher from './ThemeSwitcher'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -34,6 +35,8 @@ export default function Navbar() {
           />
         </a>
 
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <ThemeSwitcher />
         <a
           href="#location"
           onClick={scrollToBooking}
@@ -55,6 +58,7 @@ export default function Navbar() {
         >
           Book ton Flow
         </a>
+        </div>
 
       </div>
     </nav>

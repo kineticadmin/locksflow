@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { useTheme } from '@/lib/ThemeContext'
 
 interface Service { id: string; name: string; description: string; price: string; unit: string }
 
@@ -14,6 +15,7 @@ export default function ServicesSection() {
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
   const [services, setServices] = useState<Service[]>([])
+  const { fg, fgVeryDim } = useTheme()
 
   useEffect(() => {
     fetch('/api/services')
@@ -45,7 +47,7 @@ export default function ServicesSection() {
           <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
           Ce qu&apos;on fait
         </div>
-        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(32px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: isMobile ? 40 : 80, color: '#F2EDE5' }}>
+        <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(32px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: isMobile ? 40 : 80, color: fg }}>
           Des mains<br />qui{' '}
           <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', color: '#F97316', fontWeight: 400 }}>savent.</em>
         </h2>
@@ -71,13 +73,14 @@ export default function ServicesSection() {
 }
 
 function ServiceCard({ num, name, description, price, unit, offset }: { num: string; name: string; description: string; price: string; unit: string; offset: boolean }) {
+  const { bgCard, border, fg, fgVeryDim, fgMuted } = useTheme()
   const base = offset ? -60 : 0
   return (
     <div
       onClick={() => selectService(name)}
       style={{
-        background: '#0d0d0d',
-        border: '1px solid rgba(255,255,255,0.07)',
+        background: bgCard,
+        border: `1px solid ${border}`,
         borderRadius: 24,
         padding: 'clamp(24px, 4vw, 48px)',
         position: 'relative',
@@ -88,25 +91,24 @@ function ServiceCard({ num, name, description, price, unit, offset }: { num: str
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLElement
-        el.style.background = '#141414'
         el.style.borderColor = 'rgba(249,115,22,0.3)'
         el.style.transform = `translateY(${base - 4}px)`
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
-        el.style.background = '#0d0d0d'
-        el.style.borderColor = 'rgba(255,255,255,0.07)'
+        el.style.background = bgCard
+        el.style.borderColor = border
         el.style.transform = `translateY(${base}px)`
       }}
     >
       <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 11, fontWeight: 700, letterSpacing: 3, color: '#F97316', opacity: 0.5, marginBottom: 20 }}>{num}</div>
-      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: '#F2EDE5' }}>{name}</div>
-      <p style={{ fontSize: 13, color: 'rgba(242,237,229,0.5)', lineHeight: 1.7, marginBottom: 28, fontFamily: 'var(--font-unbounded)' }}>{description}</p>
+      <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(16px, 3vw, 22px)', fontWeight: 700, marginBottom: 12, lineHeight: 1.2, color: fg }}>{name}</div>
+      <p style={{ fontSize: 13, color: fgVeryDim, lineHeight: 1.7, marginBottom: 28, fontFamily: 'var(--font-unbounded)' }}>{description}</p>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(20px, 3vw, 28px)', fontWeight: 900, color: '#F97316' }}>
-          {price}{unit && <span style={{ fontSize: 13, fontWeight: 400, color: '#888', fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}
+          {price}{unit && <span style={{ fontSize: 13, fontWeight: 400, color: fgMuted, fontFamily: 'var(--font-unbounded)' }}> {unit}</span>}
         </div>
-        <div style={{ fontSize: 11, fontFamily: 'var(--font-unbounded)', color: 'rgba(242,237,229,0.3)', letterSpacing: 1 }}>
+        <div style={{ fontSize: 11, fontFamily: 'var(--font-unbounded)', color: fgVeryDim, letterSpacing: 1 }}>
           Reserver →
         </div>
       </div>

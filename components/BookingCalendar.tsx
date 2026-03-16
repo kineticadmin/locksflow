@@ -5,26 +5,17 @@ import 'react-day-picker/dist/style.css'
 import { format, isBefore, startOfDay, getDay } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { useTheme } from '@/lib/ThemeContext'
 
 interface ServiceItem { id: string; name: string; price: string; unit: string }
 interface DayConfig { day_of_week: number; active: boolean; slots: string[] }
 
-const inputStyle: React.CSSProperties = {
-  background: 'transparent',
-  border: '1px solid rgba(255,255,255,0.2)',
-  color: '#F2EDE5',
-  padding: '14px 16px',
-  outline: 'none',
-  width: '100%',
-  fontSize: 16,
-  borderRadius: 4,
-}
-
 function StepLabel({ n, label }: { n: number; label: string }) {
+  const { fg } = useTheme()
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#F97316', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-unbounded)', fontSize: 12, fontWeight: 900, color: '#080808', flexShrink: 0 }}>{n}</div>
-      <span style={{ fontFamily: 'var(--font-unbounded)', fontSize: 13, color: '#F2EDE5' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-unbounded)', fontSize: 13, color: fg }}>{label}</span>
     </div>
   )
 }
@@ -44,6 +35,8 @@ export default function BookingCalendar() {
   const [returningClient, setReturningClient] = useState<string | null>(null)
   const isMobile = useIsMobile()
   const isTablet = useIsMobile(1024)
+  const { fg, fgMuted, border, borderMed, borderStr } = useTheme()
+  const inputStyle: React.CSSProperties = { background: 'transparent', border: `1px solid ${borderStr}`, color: fg, padding: '14px 16px', outline: 'none', width: '100%', fontSize: 16, borderRadius: 4 }
   const [services, setServices] = useState<ServiceItem[]>([])
   const [availConfig, setAvailConfig] = useState<DayConfig[]>([])
   const [availSlots, setAvailSlots] = useState<string[]>([])
@@ -137,8 +130,8 @@ export default function BookingCalendar() {
   if (success) {
     return (
       <div className="step-in" style={{ textAlign: 'center', padding: '40px 0' }}>
-        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 24, color: '#F2EDE5', marginBottom: 12 }}>C&apos;est dans le flow !</div>
-        <p style={{ color: '#F2EDE5', opacity: 0.7 }}>Confirmation envoyée. On t&apos;attend !</p>
+        <div style={{ fontFamily: 'var(--font-unbounded)', fontSize: 24, color: fg, marginBottom: 12 }}>C&apos;est dans le flow !</div>
+        <p style={{ color: fg, opacity: 0.7 }}>Confirmation envoyée. On t&apos;attend !</p>
       </div>
     )
   }
@@ -151,8 +144,8 @@ export default function BookingCalendar() {
       <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>
         {steps.map((s, i) => (
           <div key={s} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ height: 2, background: step > i + 1 ? '#F97316' : step === i + 1 ? '#F97316' : 'rgba(255,255,255,0.12)', transition: 'background 0.3s' }} />
-            <span style={{ fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', color: step >= i + 1 ? '#F97316' : '#555', fontFamily: 'var(--font-unbounded)', transition: 'color 0.3s' }}>{s}</span>
+            <div style={{ height: 2, background: step > i + 1 ? '#F97316' : step === i + 1 ? '#F97316' : border, transition: 'background 0.3s' }} />
+            <span style={{ fontSize: 9, letterSpacing: 1, textTransform: 'uppercase', color: step >= i + 1 ? '#F97316' : fgMuted, fontFamily: 'var(--font-unbounded)', transition: 'color 0.3s' }}>{s}</span>
           </div>
         ))}
       </div>
@@ -168,10 +161,10 @@ export default function BookingCalendar() {
                   key={s.id}
                   type="button"
                   onClick={() => { setService(s.name); goTo(2) }}
-                  style={{ padding: '16px 12px', border: `1px solid ${service === s.name ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: service === s.name ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
+                  style={{ padding: '16px 12px', border: `1px solid ${service === s.name ? '#F97316' : borderMed}`, background: service === s.name ? 'rgba(249,115,22,0.1)' : 'transparent', textAlign: 'left', cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
                 >
-                  <div style={{ fontFamily: 'var(--font-unbounded)', color: '#F2EDE5', marginBottom: 6, fontSize: 11 }}>{s.name}</div>
-                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 13 }}>{s.price}{s.unit && <span style={{ color: '#888', fontSize: 11, fontWeight: 400 }}> {s.unit}</span>}</div>
+                  <div style={{ fontFamily: 'var(--font-unbounded)', color: fg, marginBottom: 6, fontSize: 11 }}>{s.name}</div>
+                  <div style={{ color: '#F97316', fontWeight: 700, fontSize: 13 }}>{s.price}{s.unit && <span style={{ color: fgMuted, fontSize: 11, fontWeight: 400 }}> {s.unit}</span>}</div>
                 </button>
               ))}
             </div>
@@ -200,9 +193,9 @@ export default function BookingCalendar() {
           <>
             <StepLabel n={3} label="Choisis un créneau" />
             {loadingSlots ? (
-              <div style={{ color: '#888', fontSize: 13, padding: '20px 0' }}>Chargement des créneaux...</div>
+              <div style={{ color: fgMuted, fontSize: 13, padding: '20px 0' }}>Chargement des créneaux...</div>
             ) : availSlots.length === 0 ? (
-              <div style={{ color: '#888', fontSize: 13, padding: '20px 0' }}>Aucun créneau disponible pour cette date.</div>
+              <div style={{ color: fgMuted, fontSize: 13, padding: '20px 0' }}>Aucun créneau disponible pour cette date.</div>
             ) : (
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)', gap: 8 }}>
               {availSlots.map(slot => (
@@ -210,7 +203,7 @@ export default function BookingCalendar() {
                   key={slot}
                   type="button"
                   onClick={() => { setTime(slot); goTo(4) }}
-                  style={{ padding: '10px', border: `1px solid ${time === slot ? '#F97316' : 'rgba(255,255,255,0.15)'}`, background: time === slot ? '#F97316' : 'transparent', color: time === slot ? '#080808' : '#F2EDE5', fontFamily: 'var(--font-unbounded)', fontSize: 11, cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
+                  style={{ padding: '10px', border: `1px solid ${time === slot ? '#F97316' : borderMed}`, background: time === slot ? '#F97316' : 'transparent', color: time === slot ? '#080808' : fg, fontFamily: 'var(--font-unbounded)', fontSize: 11, cursor: 'pointer', transition: '0.2s', borderRadius: 4 }}
                 >
                   {slot}
                 </button>
@@ -253,14 +246,15 @@ export default function BookingCalendar() {
 }
 
 function BackBtn({ onClick }: { onClick: () => void }) {
+  const { fg, borderStr } = useTheme()
   return (
     <button
       type="button"
       onClick={onClick}
       className="btn-fill"
-      style={{ marginTop: 24, background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#F2EDE5', fontSize: 12, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 100, transition: '0.2s' }}
+      style={{ marginTop: 24, background: 'transparent', border: `1px solid ${borderStr}`, color: fg, fontSize: 12, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 100, transition: '0.2s' }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#F97316'; (e.currentTarget as HTMLElement).style.color = '#F97316' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.2)'; (e.currentTarget as HTMLElement).style.color = '#F2EDE5' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = borderStr; (e.currentTarget as HTMLElement).style.color = fg }}
     >
       ← Retour
     </button>

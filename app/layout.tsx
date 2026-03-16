@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Unbounded, DM_Sans, Playfair_Display, Gochi_Hand } from 'next/font/google'
 import './globals.css'
+import { ThemeProvider } from '@/lib/ThemeContext'
 
 const unbounded = Unbounded({
   subsets: ['latin'],
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={`${unbounded.variable} ${dmSans.variable} ${playfair.variable} ${gochiHand.variable}`}>
-      <body>{children}</body>
+      <body><ThemeProvider>{children}</ThemeProvider></body>
     </html>
   )
 }

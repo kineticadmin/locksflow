@@ -1,4 +1,5 @@
 'use client'
+import { useTheme } from '@/lib/ThemeContext'
 
 interface MediaItem {
   id: string
@@ -8,9 +9,10 @@ interface MediaItem {
 }
 
 export default function GalleryGrid({ items }: { items: MediaItem[] }) {
+  const { fg } = useTheme()
   if (items.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '80px 0', color: '#F2EDE5', opacity: 0.4 }}>
+      <div style={{ textAlign: 'center', padding: '80px 0', color: fg, opacity: 0.4 }}>
         <p style={{ fontFamily: 'var(--font-unbounded)' }}>Les photos arrivent bientot...</p>
       </div>
     )
