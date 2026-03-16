@@ -39,8 +39,8 @@ export default function LocationSection() {
   return (
     <section style={{ background: bgSection }} id="location">
       <div className="container" style={{
-        paddingTop: isMobile ? 60 : 120,
-        paddingBottom: isMobile ? 60 : 120,
+        paddingTop: isMobile ? 100 : 220,
+        paddingBottom: isMobile ? 100 : 220,
         display: 'grid',
         gridTemplateColumns: isTablet ? '1fr' : '1fr 1.4fr',
         gap: isMobile ? 48 : isTablet ? 56 : 80,
@@ -54,7 +54,7 @@ export default function LocationSection() {
           </div>
           <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(24px,3.5vw,48px)', fontWeight: 900, letterSpacing: -1.5, lineHeight: 1.1, marginBottom: 32, color: fg }}>
             On est<br />à{' '}
-            <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400, color: '#F97316' }}>Neuilly.</em>
+            <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400, color: '#F97316', fontSize: '1.2em' }}>Neuilly.</em>
             <br />T&apos;es le bienvenu.
           </h2>
 

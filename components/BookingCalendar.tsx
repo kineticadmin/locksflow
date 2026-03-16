@@ -20,6 +20,47 @@ function StepLabel({ n, label }: { n: number; label: string }) {
   )
 }
 
+function BookingSummary({ service, date, time, onEdit }: { service: string; date?: Date; time: string; onEdit: (step: number) => void }) {
+  const { fgMuted } = useTheme()
+  if (!service) return null
+  const items: { label: string; step: number }[] = []
+  if (service) items.push({ label: service, step: 1 })
+  if (date)    items.push({ label: format(date, 'EEE d MMM', { locale: fr }), step: 2 })
+  if (time)    items.push({ label: time, step: 3 })
+  if (items.length === 0) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, marginBottom: 28 }}>
+      {items.map((item, i) => (
+        <div key={item.step} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          {i > 0 && <span style={{ color: fgMuted, fontSize: 10, opacity: 0.5 }}>›</span>}
+          <button
+            type="button"
+            onClick={() => onEdit(item.step)}
+            style={{
+              background: 'rgba(249,115,22,0.1)',
+              border: '1px solid rgba(249,115,22,0.3)',
+              color: '#F97316',
+              borderRadius: 100,
+              padding: '4px 12px',
+              fontSize: 10,
+              fontFamily: 'var(--font-unbounded)',
+              fontWeight: 500,
+              cursor: 'pointer',
+              letterSpacing: 0.3,
+              transition: 'background 0.15s, border-color 0.15s',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(249,115,22,0.2)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(249,115,22,0.1)' }}
+          >
+            {item.label}
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function BookingCalendar() {
   const [step, setStep]       = useState(1)
   const [leaving, setLeaving] = useState(false)
@@ -149,6 +190,8 @@ export default function BookingCalendar() {
           </div>
         ))}
       </div>
+
+      {step > 1 && <BookingSummary service={service} date={date} time={time} onEdit={goTo} />}
 
       <div className={leaving ? 'step-out' : 'step-in'} key={step}>
 

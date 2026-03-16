@@ -24,7 +24,7 @@ export default function HeroSection() {
         <Parallax speed={0.15} style={{ flex: '0 0 auto', maxWidth: isMobile ? '100%' : 600 }}>
           <h1 style={{ fontFamily: 'var(--font-unbounded)', fontSize: isMobile ? 'clamp(36px,10vw,60px)' : 'clamp(40px,7vw,110px)', lineHeight: 0.9, fontWeight: 900, textTransform: 'uppercase', marginBottom: 20, color: fg }}>
             More than<br />just{' '}
-            <em style={{ fontFamily: 'var(--font-gochi)', color: '#F97316', fontStyle: 'normal', textTransform: 'lowercase', fontWeight: 400 }}>locks.</em>
+            <em style={{ fontFamily: 'var(--font-gochi)', color: '#F97316', fontStyle: 'normal', textTransform: 'lowercase', fontWeight: 400, fontSize: '1.2em' }}>locks.</em>
           </h1>
           <p style={{ fontSize: isMobile ? 15 : 20, maxWidth: 500, opacity: 0.7, fontWeight: 300, marginBottom: isMobile ? 28 : 40, color: fg }}>
             On ne coiffe pas des cheveux, on sculpte ton identite. Bienvenue dans la communaute Locks Flow.

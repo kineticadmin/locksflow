@@ -98,14 +98,18 @@ body::before {
 
 /* DayPicker custom — light mode overrides */
 [data-theme="light"] .rdp-custom {
-  color: #1A1209;
+  color: #1A1209 !important;
 }
-[data-theme="light"] .rdp-custom .rdp-caption_label { color: #1A1209; }
-[data-theme="light"] .rdp-custom .rdp-head_cell { color: rgba(26,18,9,0.4); }
-[data-theme="light"] .rdp-custom .rdp-day_button { color: #1A1209; }
-[data-theme="light"] .rdp-custom .rdp-day_button:hover:not(:disabled) { background: rgba(249,115,22,0.15) !important; color: #1A1209; }
+[data-theme="light"] .rdp-custom .rdp-caption_label { color: #1A1209 !important; }
+[data-theme="light"] .rdp-custom .rdp-head_cell,
+[data-theme="light"] .rdp-custom .rdp-weekday { color: rgba(26,18,9,0.5) !important; }
+[data-theme="light"] .rdp-custom .rdp-day_button { color: #1A1209 !important; }
+[data-theme="light"] .rdp-custom .rdp-day_button:hover:not(:disabled) { background: rgba(249,115,22,0.15) !important; color: #1A1209 !important; }
 [data-theme="light"] .rdp-custom .rdp-disabled .rdp-day_button,
 [data-theme="light"] .rdp-custom .rdp-day_button:disabled { color: rgba(26,18,9,0.2) !important; }
+[data-theme="light"] .rdp-custom .rdp-nav button { color: #F97316 !important; }
+[data-theme="light"] .rdp-custom .rdp-nav button svg,
+[data-theme="light"] .rdp-custom .rdp-chevron { fill: #F97316 !important; stroke: #F97316 !important; }
 
 @keyframes marquee {
   0% { transform: translateX(0); }

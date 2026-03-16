@@ -65,13 +65,13 @@ export default function FinalCTA() {
 
   return (
     <div style={{ background: '#F97316', position: 'relative', overflow: 'visible', minHeight: isMobile ? 'auto' : 400 }} id="rdv">
-      <div className="container" style={{ paddingTop: isMobile ? 48 : 80, paddingBottom: isMobile ? 48 : 80, position: 'relative' }}>
+      <div className="container" style={{ paddingTop: isMobile ? 80 : 120, paddingBottom: isMobile ? 80 : 120, position: 'relative' }}>
 
         <div style={{ position: 'relative', zIndex: 2, maxWidth: isMobile ? '100%' : 500 }}>
           <p style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' as const, color: 'rgba(8,8,8,0.5)', marginBottom: 16, fontWeight: 500 }}>Réserver</p>
           <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(26px,4vw,52px)', fontWeight: 900, color: '#080808', letterSpacing: -2, lineHeight: 1.05 }}>
             Prends ton RDV.<br />
-            <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400 }}>Rejoins le flow.</em>
+            <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', fontWeight: 400, fontSize: '1.2em' }}>Rejoins le flow.</em>
           </h2>
         </div>
 

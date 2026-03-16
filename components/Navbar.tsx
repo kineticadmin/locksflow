@@ -35,8 +35,7 @@ export default function Navbar() {
           />
         </a>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <ThemeSwitcher />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <a
           href="#location"
           onClick={scrollToBooking}
@@ -58,6 +57,7 @@ export default function Navbar() {
         >
           Book ton Flow
         </a>
+        <ThemeSwitcher />
         </div>
 
       </div>

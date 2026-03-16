@@ -42,14 +42,14 @@ export default function ServicesSection() {
 
   return (
     <section style={{ background: 'transparent', overflow: 'hidden' }} id="services">
-      <div className="container" style={{ paddingTop: isMobile ? 60 : 120, paddingBottom: isMobile ? 80 : 160 }}>
+      <div className="container" style={{ paddingTop: isMobile ? 100 : 220, paddingBottom: isMobile ? 120 : 260 }}>
         <div style={{ fontSize: 11, letterSpacing: 4, textTransform: 'uppercase' as const, color: '#F97316', fontWeight: 500, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ display: 'block', width: 32, height: 1, background: '#F97316' }} />
           Ce qu&apos;on fait
         </div>
         <h2 style={{ fontFamily: 'var(--font-unbounded)', fontSize: 'clamp(32px,5vw,68px)', fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: isMobile ? 40 : 80, color: fg }}>
           Des mains<br />qui{' '}
-          <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', color: '#F97316', fontWeight: 400 }}>savent.</em>
+          <em style={{ fontStyle: 'italic', fontFamily: 'var(--font-gochi)', color: '#F97316', fontWeight: 400, fontSize: '1.2em' }}>savent.</em>
         </h2>
 
         <div
